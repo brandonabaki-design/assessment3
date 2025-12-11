@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Curriculum Playbook | EDGI902</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        brand: {
+                            500: '#f97316', // Orange
+                            600: '#ea580c',
+                        }
+                    },
+                    animation: {
+                        'bounce-x': 'bounce-x 1s infinite',
+                    },
+                    keyframes: {
+                        'bounce-x': {
+                            '0%, 100%': { transform: 'translateX(-25%) translateY(25%)' },
+                            '50%': { transform: 'translateX(0) translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        h1, h2, h3, .serif-font { font-family: 'Playfair Display', serif; }
+        
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Navigation Active State */
+        .active-nav { 
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, transparent 100%);
+            border-left: 3px solid #f97316;
+            color: #f97316; 
+            font-weight: 600; 
+        }
+        .nav-item { border-left: 3px solid transparent; }
+
+        /* Video Player */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; 
+            background-color: #000;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .video-container iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; z-index: 10;
+        }
+
+        /* Padlet Card Visual */
+        .padlet-visual {
+            background: radial-gradient(circle at top right, #334155 0%, #0f172a 100%);
+            position: relative; overflow: hidden;
+        }
+
+        /* Modal */
+        .modal-overlay { background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
+        
+        /* Custom Checkbox */
+        .custom-checkbox {
+            appearance: none; background-color: #1e293b; border: 1px solid #475569;
+            width: 1.25rem; height: 1.25rem; border-radius: 0.25rem; display: grid; place-content: center;
+        }
+        .custom-checkbox::before {
+            content: ""; width: 0.65em; height: 0.65em; transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em white;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .custom-checkbox:checked { background-color: #f97316; border-color: #f97316; }
+        .custom-checkbox:checked::before { transform: scale(1); }
+
+        /* Utility for simple fades */
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-300 h-screen flex flex-col md:flex-row overflow-hidden selection:bg-orange-500 selection:text-white">
+
+    <!-- SIDEBAR -->
+    <aside class="w-full md:w-72 bg-slate-900 border-r border-slate-800 flex-shrink-0 flex flex-col h-full overflow-y-auto z-20 shadow-2xl">
+        <div class="p-6 border-b border-slate-800 sticky top-0 z-10 bg-slate-900/95 backdrop-blur">
+            <div class="flex items-center gap-3 text-brand-500 mb-1">
+                <div class="bg-orange-500/10 p-2.5 rounded-xl border border-orange-500/20 shadow-inner">
+                    <i class="fa-solid fa-layer-group text-xl"></i>
+                </div>
+                <div class="leading-none">
+                    <h1 class="text-lg font-bold text-white tracking-tight">The Curriculum<br>Playbook</h1>
+                </div>
+            </div>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest pl-1">EDGI902 Prototype</p>
+        </div>
+
+        <nav class="flex-1 py-6 space-y-1 px-3">
+            <p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Orientation</p>
+            
+            <button onclick="switchView('welcome')" id="nav-welcome" class="w-full nav-item active-nav flex items-center px-4 py-3 text-sm rounded-lg hover:bg-slate-800 transition-all duration-200 text-left">
+                <i class="fa-solid fa-compass w-6 text-center mr-2"></i>
+                <span>Start Here</span>
+            </button>
+            
+            <button onclick="switchView('announcements')" id="nav-announcements" class="w-full nav-item flex items-center px-4 py-3 text-sm text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white transition-all duration-200 text-left">
+                <i class="fa-solid fa-bullhorn w-6 text-center mr-2"></i>
+                <span>Announcements</span>
+            </button>
+            
+            <p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 mt-8">Modules</p>
+            
+            <button onclick="switchView('mod1')" id="nav-mod1" class="w-full nav-item flex items-center px-4 py-3 text-sm text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white transition-all duration-200 group text-left">
+                <span class="w-6 text-center mr-2 flex justify-center"><span class="w-5 h-5 rounded flex items-center justify-center border border-slate-700 text-[10px] group-hover:border-orange-500 group-hover:bg-orange-500 group-hover:text-white transition">1</span></span>
+                <span>Why Bother? (UX)</span>
+            </button>
+            
+            <button onclick="switchView('mod2')" id="nav-mod2" class="w-full nav-item flex items-center px-4 py-3 text-sm text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white transition-all duration-200 group text-left">
+                <span class="w-6 text-center mr-2 flex justify-center"><span class="w-5 h-5 rounded flex items-center justify-center border border-slate-700 text-[10px] group-hover:border-orange-500 group-hover:bg-orange-500 group-hover:text-white transition">2</span></span>
+                <span>The Bricks (HTML)</span>
+            </button>
+            
+            <button onclick="switchView('mod3')" id="nav-mod3" class="w-full nav-item flex items-center px-4 py-3 text-sm text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white transition-all duration-200 group text-left">
+                <span class="w-6 text-center mr-2 flex justify-center"><span class="w-5 h-5 rounded flex items-center justify-center border border-slate-700 text-[10px] group-hover:border-orange-500 group-hover:bg-orange-500 group-hover:text-white transition">3</span></span>
+                <span>The Paint (CSS)</span>
+            </button>
+            
+            <button onclick="switchView('mod4')" id="nav-mod4" class="w-full nav-item flex items-center px-4 py-3 text-sm text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white transition-all duration-200 group text-left">
+                <span class="w-6 text-center mr-2 flex justify-center"><span class="w-5 h-5 rounded flex items-center justify-center border border-slate-700 text-[10px] group-hover:border-orange-500 group-hover:bg-orange-500 group-hover:text-white transition">4</span></span>
+                <span>The Blueprint</span>
+            </button>
+            
+            <button onclick="switchView('mod5')" id="nav-mod5" class="w-full nav-item flex items-center px-4 py-3 text-sm text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white transition-all duration-200 group text-left">
+                <span class="w-6 text-center mr-2 flex justify-center"><span class="w-5 h-5 rounded flex items-center justify-center border border-slate-700 text-[10px] group-hover:border-orange-500 group-hover:bg-orange-500 group-hover:text-white transition">5</span></span>
+                <span>The Build</span>
+            </button>
+
+            <p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 mt-8">Evaluation</p>
+
+            <button onclick="switchView('assessment')" id="nav-assessment" class="w-full nav-item flex items-center px-4 py-3 text-sm text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white transition-all duration-200 text-left">
+                <i class="fa-solid fa-graduation-cap w-6 text-center mr-2"></i>
+                <span>Final Assessment</span>
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+            <div class="flex items-center gap-3 bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                <img src="https://ui-avatars.com/api/?name=Sarah+L&background=1e293b&color=f97316" class="w-9 h-9 rounded-full border border-slate-600" alt="User">
+                <div class="overflow-hidden">
+                    <p class="text-sm font-bold text-white truncate">Sarah (You)</p>
+                    <p class="text-[10px] text-slate-400 truncate uppercase tracking-wide">Learner</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 h-full overflow-y-auto p-4 md:p-10 relative scroll-smooth bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
+        
+        <!-- Breadcrumbs -->
+        <div class="max-w-6xl mx-auto mb-8 flex items-center text-xs text-slate-500 font-medium">
+            <a href="#" class="hover:text-orange-500 transition"><i class="fa-solid fa-house"></i></a>
+            <span class="mx-3 text-slate-700">/</span>
+            <span class="hover:text-orange-500 transition">Courses</span>
+            <span class="mx-3 text-slate-700">/</span>
+            <span class="text-slate-200">The Curriculum Playbook</span>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW: WELCOME                              -->
+        <!-- ========================================== -->
+        <div id="view-welcome" class="max-w-6xl mx-auto fade-in">
+            <div class="glass-panel rounded-2xl overflow-hidden mb-10 shadow-2xl">
+                <!-- Banner -->
+                <div class="bg-gradient-to-r from-orange-900/80 via-slate-900 to-slate-900 p-10 md:p-14 border-b border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-10 opacity-10">
+                        <i class="fa-solid fa-code text-9xl text-white"></i>
+                    </div>
+                    <span class="bg-orange-500/20 text-orange-400 border border-orange-500/20 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">Module 0</span>
+                    <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">Welcome & Orientation</h1>
+                    <p class="text-slate-300 text-lg max-w-2xl leading-relaxed font-light">
+                        Bridge the gap between pedagogy and technology. A practical playbook for curriculum leaders ready to build better systems.
+                    </p>
+                </div>
+
+                <div class="p-8 md:p-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <!-- Left Column -->
+                    <div class="lg:col-span-2 space-y-12">
+                        
+                        <!-- Intro Video -->
+                        <div>
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-orange-500 rounded-lg p-2 text-white"><i class="fa-solid fa-video"></i></div>
+                                <h3 class="text-xl font-bold text-white">Educator Introduction</h3>
+                            </div>
+                            <div class="video-container">
+                                <!-- HEYGEN EMBED -->
+                                <iframe 
+                                    src="https://app.heygen.com/embedded-player/005d6e488d8745e7bb895fbc38968f50" 
+                                    title="HeyGen video player" 
+                                    allow="encrypted-media; fullscreen;" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                            <div class="mt-4 p-4 rounded-lg bg-slate-900/50 border border-slate-800 text-sm text-slate-400">
+                                <i class="fa-solid fa-circle-info text-orange-500 mr-2"></i> An introduction to my "Why" and what we will build together.
+                            </div>
+                        </div>
+
+                        <!-- Documents -->
+                        <div>
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-blue-600 rounded-lg p-2 text-white"><i class="fa-solid fa-folder-open"></i></div>
+                                <h3 class="text-xl font-bold text-white">Essential Documents</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <button onclick="openPdf('syllabus')" class="group flex items-start p-5 bg-slate-900/50 border border-slate-700/50 rounded-xl hover:bg-slate-800 hover:border-orange-500/50 transition-all duration-300 text-left w-full">
+                                    <div class="bg-red-500/10 text-red-500 w-12 h-12 rounded-lg flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-red-500 group-hover:text-white transition duration-300 shadow-lg">
+                                        <i class="fa-solid fa-file-pdf"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-bold text-slate-200 group-hover:text-white transition">Course Syllabus</h4>
+                                        <p class="text-xs text-slate-500 mt-1">Outcomes & Policies</p>
+                                    </div>
+                                </button>
+                                
+                                <button onclick="openPdf('schedule')" class="group flex items-start p-5 bg-slate-900/50 border border-slate-700/50 rounded-xl hover:bg-slate-800 hover:border-orange-500/50 transition-all duration-300 text-left w-full">
+                                    <div class="bg-blue-500/10 text-blue-500 w-12 h-12 rounded-lg flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-blue-500 group-hover:text-white transition duration-300 shadow-lg">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-bold text-slate-200 group-hover:text-white transition">Course Schedule</h4>
+                                        <p class="text-xs text-slate-500 mt-1">Timeline & Deadlines</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Community Task -->
+                        <div class="relative overflow-hidden rounded-2xl border border-orange-500/30 bg-gradient-to-b from-slate-900 to-slate-950 p-8 shadow-2xl">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                            
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Required</span>
+                                <h3 class="text-xl font-bold text-white">Task: Hello & Your Why</h3>
+                            </div>
+                            
+                            <!-- New Description & LOs -->
+                            <div class="mb-8 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+                                <p class="text-slate-300 text-sm mb-3">
+                                    <strong class="text-orange-400">Why are we doing this?</strong> In a digital course, social presence is key. By articulating your "why," you not only introduce yourself but also ground your technical learning in your personal pedagogical philosophy.
+                                </p>
+                                <div class="flex gap-2 text-xs">
+                                    <span class="bg-slate-700 text-slate-300 px-2 py-1 rounded">LO 1.1: Establish Social Presence</span>
+                                    <span class="bg-slate-700 text-slate-300 px-2 py-1 rounded">LO 1.2: Articulate Pedagogy</span>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div class="space-y-6">
+                                    <div>
+                                        <h4 class="text-orange-400 font-bold text-sm uppercase tracking-wide mb-2">Instructions</h4>
+                                        <ul class="space-y-3 text-sm text-slate-400">
+                                            <li class="flex items-start gap-3"><span class="bg-slate-800 text-slate-300 w-5 h-5 rounded-full flex items-center justify-center text-[10px]">1</span> Watch the intro video.</li>
+                                            <li class="flex items-start gap-3"><span class="bg-slate-800 text-slate-300 w-5 h-5 rounded-full flex items-center justify-center text-[10px]">2</span> Record a 1-2 min video on <a href="https://www.canva.com/" target="_blank" class="text-white underline hover:text-orange-500">Canva</a>.</li>
+                                            <li class="flex items-start gap-3"><span class="bg-slate-800 text-slate-300 w-5 h-5 rounded-full flex items-center justify-center text-[10px]">3</span> Paste your public link below.</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Submission UI -->
+                                    <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-700/50">
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Submission</label>
+                                        <div id="submission-form" class="flex gap-2">
+                                            <input type="text" id="video-link-input" placeholder="Paste Canva public link..." class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 transition">
+                                            <button onclick="submitAssignment()" class="bg-orange-600 hover:bg-orange-500 text-white px-6 py-2 rounded-lg text-sm font-bold transition shadow-lg shadow-orange-900/20">Submit</button>
+                                        </div>
+                                        <!-- Success Message Container -->
+                                        <div id="submission-success" class="hidden flex items-center gap-3 text-green-400 bg-green-400/10 p-3 rounded-lg border border-green-400/20">
+                                            <i class="fa-solid fa-circle-check text-xl"></i>
+                                            <div>
+                                                <p class="font-bold text-sm">Submitted Successfully</p>
+                                                <p class="text-xs opacity-80" id="submission-time"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="video-container bg-black border border-slate-700">
+                                    <iframe src="https://app.heygen.com/embedded-player/e7e9ea0d4125462982306ec295ec3ce6" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column: Instructor -->
+                    <div>
+                        <div class="sticky top-6">
+                            <div class="glass-panel p-8 rounded-2xl text-center shadow-xl">
+                                <div class="relative w-32 h-32 mx-auto mb-6">
+                                    <img src="https://media.licdn.com/dms/image/v2/D4D03AQHZc3w1uIPciw/profile-displayphoto-scale_200_200/B4DZl6ndXPHsAY-/0/1758698788876?e=2147483647&v=beta&t=n8x_87SdCyTLd-ILDodkOa88a_B7iQBdKoKhufqWsP0" 
+                                             class="w-full h-full rounded-full object-cover border-4 border-slate-700 shadow-2xl" alt="Brandon">
+                                    <div class="absolute bottom-2 right-1 bg-green-500 w-5 h-5 rounded-full border-4 border-slate-800"></div>
+                                </div>
+                                <h3 class="text-xl font-bold text-white mb-1">Brandon Abdul Baki</h3>
+                                <p class="text-orange-500 text-xs font-bold uppercase tracking-widest mb-6">Head of Curriculum</p>
+                                <button onclick="openContactModal()" class="w-full bg-white text-slate-900 font-bold py-3 rounded-xl hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-lg">
+                                    Contact Me
+                                </button>
+                                <p class="text-xs text-slate-500 mt-4">Response time: 24h</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- GO TO MODULE 1 BUTTON -->
+            <div class="flex justify-end pb-12">
+                <button onclick="switchView('mod1')" class="group flex items-center gap-4 bg-orange-600/90 border border-orange-500 px-8 py-5 rounded-2xl hover:bg-orange-500 hover:shadow-orange-500/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="text-right">
+                        <p class="text-[10px] text-orange-100 font-bold uppercase tracking-widest mb-1">Begin The Course</p>
+                        <p class="text-2xl font-bold text-white">Go to Module 1 <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i></p>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW: MODULE 1                             -->
+        <!-- ========================================== -->
+        <div id="view-mod1" class="max-w-5xl mx-auto fade-in hidden">
+            <div class="mb-10">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="h-px w-8 bg-orange-500"></div>
+                    <span class="text-orange-500 font-bold tracking-widest text-xs uppercase">Module 1</span>
+                </div>
+                <h2 class="text-5xl font-bold text-white serif-font mb-4">Why Bother? UX & UDL</h2>
+                <p class="text-slate-400 text-lg max-w-2xl">Understanding the frustration of bad design before building the solution.</p>
+            </div>
+
+            <!-- Overview Card -->
+            <div class="glass-panel p-8 rounded-2xl mb-8">
+                <h3 class="text-xl font-bold text-white mb-4">Module Overview</h3>
+                <p class="text-slate-300 leading-relaxed mb-6">
+                    Before we write code, we must understand the "why." We will explore how <strong>User Experience (UX)</strong> impacts teacher wellbeing and how <strong>Universal Design for Learning (UDL)</strong> applies to digital staffrooms.
+                </p>
+                <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                    <h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Success Criteria</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-green-500 mt-1"></i> <span class="text-slate-300 text-sm">Define UX failures in school portals.</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-green-500 mt-1"></i> <span class="text-slate-300 text-sm">Explain the "3-Click Rule".</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-green-500 mt-1"></i> <span class="text-slate-300 text-sm">Critique resources using the 3 Pillars of UDL.</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Video Lesson -->
+            <div class="glass-panel p-8 rounded-2xl mb-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-orange-500 rounded p-1.5 text-white text-sm"><i class="fa-solid fa-play"></i></div>
+                    <h3 class="text-xl font-bold text-white">UX Design and the 3 Pillars of UDL</h3>
+                </div>
+                <div class="video-container mb-6">
+                    <iframe src="https://app.heygen.com/embedded-player/94165e1167c34b5aabda86f103dd2e22" allowfullscreen></iframe>
+                </div>
+                <div class="text-center p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                    <p class="text-orange-400 font-bold text-sm"><i class="fa-solid fa-star mr-2"></i>Watch till the end for info on Assessment 1!</p>
+                </div>
+            </div>
+
+            <!-- Resources -->
+            <div class="glass-panel p-8 rounded-2xl mb-8">
+                <h3 class="text-xl font-bold text-white mb-6">Required Reading</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- UDL External Link -->
+                    <a href="https://ncse.ie/wp-content/uploads/2025/01/Universal-Design-for-Learning-Principle.pdf" target="_blank" class="flex items-center p-4 bg-slate-800 rounded-xl border border-slate-700 hover:border-orange-500 hover:bg-slate-700 transition group">
+                        <i class="fa-solid fa-file-pdf text-red-500 text-2xl mr-4 group-hover:scale-110 transition"></i>
+                        <div>
+                            <span class="block font-bold text-white group-hover:text-orange-400 transition">The Three Pillars of UDL</span>
+                            <span class="text-xs text-slate-500">CAST Guidelines v3.0 (External)</span>
+                        </div>
+                        <i class="fa-solid fa-up-right-from-square ml-auto text-slate-600 group-hover:text-white"></i>
+                    </a>
+
+                    <!-- UX Checklist (Internal) -->
+                    <button onclick="openPdf('ux-checklist')" class="flex items-center p-4 bg-slate-800 rounded-xl border border-slate-700 hover:border-orange-500 hover:bg-slate-700 transition group text-left w-full">
+                        <i class="fa-solid fa-file-pdf text-red-500 text-2xl mr-4 group-hover:scale-110 transition"></i>
+                        <div>
+                            <span class="block font-bold text-white group-hover:text-orange-400 transition">UX Audit Checklist.pdf</span>
+                            <span class="text-xs text-slate-500">Rubric for 3-Click Rule (Interactive)</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Padlet Activity -->
+            <div class="glass-panel p-1 rounded-2xl mb-12 bg-gradient-to-br from-pink-500/20 to-yellow-500/20 border-0">
+                <div class="bg-slate-900 rounded-xl p-8 h-full">
+                    <div class="flex items-center gap-3 mb-6">
+                        <h3 class="text-xl font-bold text-white">Activity: See-Think-Wonder</h3>
+                        <span class="bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">Discussion</span>
+                    </div>
+                    
+                    <!-- Added Description, LOs, Example, Rubric -->
+                    <div class="mb-8 space-y-4">
+                        <div class="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+                             <p class="text-slate-300 text-sm mb-3">
+                                <strong class="text-indigo-400">Why are we doing this?</strong> Before we can build better tools, we must learn to identify bad design objectively. This routine separates observation from judgment.
+                            </p>
+                            <div class="flex gap-2 text-xs mb-3">
+                                <span class="bg-slate-700 text-slate-300 px-2 py-1 rounded">LO 2.1: Critique UX Design</span>
+                                <span class="bg-slate-700 text-slate-300 px-2 py-1 rounded">LO 2.2: Apply Critical Inquiry</span>
+                            </div>
+                            
+                            <div class="p-3 bg-slate-900 rounded border border-slate-700 text-xs text-slate-400 italic">
+                                <strong>Example Response:</strong><br>
+                                "<strong>See:</strong> I see a staff portal with 12 unlabelled folder icons.<br>
+                                <strong>Think:</strong> I think this would make a new teacher feel anxious about where to save files.<br>
+                                <strong>Wonder:</strong> I wonder if color-coding them by department would solve this?"
+                            </div>
+                        </div>
+
+                        <!-- Rubric Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left text-slate-400 border border-slate-700 rounded-lg">
+                                <thead class="bg-slate-800 text-slate-200 uppercase">
+                                    <tr>
+                                        <th class="px-4 py-2">Criteria</th>
+                                        <th class="px-4 py-2">Developing (1pt)</th>
+                                        <th class="px-4 py-2">Proficient (2pts)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-700">
+                                    <tr>
+                                        <td class="px-4 py-2 font-bold text-white">Observation</td>
+                                        <td class="px-4 py-2">Vague description ("It looks bad").</td>
+                                        <td class="px-4 py-2">Specific, objective detail ("The font size is 8px").</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-bold text-white">Analysis</td>
+                                        <td class="px-4 py-2">States a feeling without cause.</td>
+                                        <td class="px-4 py-2">Connects design feature to user emotion/outcome.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-bold text-white">Inquiry</td>
+                                        <td class="px-4 py-2">No question posed.</td>
+                                        <td class="px-4 py-2">Asks a "How might we..." question for improvement.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="padlet-visual rounded-xl p-10 text-center border border-slate-700 group hover:border-indigo-500 transition-all duration-300">
+                        <!-- PADLET ICON SVG -->
+                        <div class="mb-6 transform group-hover:scale-110 transition duration-300">
+                           <svg class="w-16 h-16 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="50" fill="#2D2D2D"/>
+                                <path d="M68.5 35.5C68.5 35.5 65.5 28.5 56 28.5C46.5 28.5 31 38.5 31 58.5C31 78.5 45.5 73.5 45.5 73.5" stroke="#FFEA5F" stroke-width="6" stroke-linecap="round"/>
+                                <path d="M72 45.5C72 45.5 68.5 42 61 43.5C53.5 45 42.5 55 42.5 65" stroke="#F95C84" stroke-width="6" stroke-linecap="round"/>
+                                <circle cx="70" cy="35" r="4" fill="#FFEA5F"/>
+                            </svg>
+                        </div>
+                        
+                        <h4 class="text-2xl font-bold text-white mb-2">Padlet Board</h4>
+                        <p class="text-slate-400 mb-8 max-w-md mx-auto">Post your "See, Think, Wonder" reflection. Comment on two peers.</p>
+                        
+                        <a href="https://padlet.com/brandonabaki/assessment-see-think-wonder-b808ad0wh1xtl3g8" target="_blank" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-indigo-900/50 transition transform hover:-translate-y-1">
+                            Open Padlet Sheet <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Self Checklist -->
+            <div class="glass-panel p-8 rounded-2xl mb-8">
+                <h3 class="text-lg font-bold text-white mb-6">Module Checklist</h3>
+                <div class="space-y-4">
+                    <label class="flex items-center gap-4 group cursor-pointer">
+                        <input type="checkbox" class="custom-checkbox">
+                        <span class="text-slate-400 group-hover:text-white transition">I can define "User Experience" in schools.</span>
+                    </label>
+                    <label class="flex items-center gap-4 group cursor-pointer">
+                        <input type="checkbox" class="custom-checkbox">
+                        <span class="text-slate-400 group-hover:text-white transition">I watched the "3 Pillars" video.</span>
+                    </label>
+                    <label class="flex items-center gap-4 group cursor-pointer">
+                        <input type="checkbox" class="custom-checkbox">
+                        <span class="text-slate-400 group-hover:text-white transition">I read the UDL Guidelines PDF.</span>
+                    </label>
+                    <label class="flex items-center gap-4 group cursor-pointer">
+                        <input type="checkbox" class="custom-checkbox">
+                        <span class="text-slate-400 group-hover:text-white transition">I posted on the Padlet.</span>
+                    </label>
+                </div>
+            </div>
+
+             <div class="flex justify-between mt-12 pt-8 border-t border-slate-800">
+                <button onclick="switchView('welcome')" class="text-slate-500 hover:text-white transition">← Back to Start</button>
+                <button onclick="switchView('mod2')" class="bg-white text-slate-900 px-6 py-2 rounded-lg font-bold hover:bg-orange-500 hover:text-white transition">Next Module →</button>
+            </div>
+        </div>
+
+        <!-- Announcements View -->
+        <div id="view-announcements" class="max-w-5xl mx-auto fade-in hidden">
+            <h2 class="text-4xl font-bold text-white serif-font mb-8">Announcements</h2>
+            <div class="space-y-6">
+                <!-- Task Alert -->
+                <div class="bg-gradient-to-r from-slate-900 to-slate-800 border-l-4 border-orange-500 p-6 rounded-r-xl shadow-lg">
+                    <div class="flex justify-between mb-2">
+                        <h3 class="font-bold text-white text-lg">Activity 1: Hello & Your Why</h3>
+                        <span class="text-orange-500 text-xs font-bold uppercase">Action Required</span>
+                    </div>
+                    <p class="text-slate-400 text-sm mb-4">Posted: Today</p>
+                    <p class="text-slate-300 mb-4">Please submit your Canva video introduction. This is due Friday.</p>
+                    <button onclick="switchView('welcome')" class="text-orange-500 font-bold text-sm hover:text-white transition">Go to Submission &rarr;</button>
+                </div>
+
+                <!-- Next Class -->
+                <div class="glass-panel p-6 rounded-xl">
+                    <h3 class="font-bold text-white text-lg mb-1">Next Class Preparation</h3>
+                    <p class="text-slate-400 text-sm mb-4">Posted: Yesterday</p>
+                    <p class="text-slate-300 mb-4">Please read the UDL Guidelines before our next sync.</p>
+                    <a href="https://ncse.ie/wp-content/uploads/2025/01/Universal-Design-for-Learning-Principle.pdf" target="_blank" class="inline-flex items-center gap-2 bg-slate-800 text-blue-400 px-4 py-2 rounded-lg text-sm font-bold border border-slate-700 hover:bg-slate-700 hover:text-white transition">
+                        <i class="fa-solid fa-file-pdf"></i> Download: The Three Pillars of UDL
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placeholder Views -->
+        <div id="view-mod2" class="hidden text-center py-20"><h2 class="text-3xl text-slate-600">Module 2 Locked</h2></div>
+        <div id="view-mod3" class="hidden text-center py-20"><h2 class="text-3xl text-slate-600">Module 3 Locked</h2></div>
+        <div id="view-mod4" class="hidden text-center py-20"><h2 class="text-3xl text-slate-600">Module 4 Locked</h2></div>
+        <div id="view-mod5" class="hidden text-center py-20"><h2 class="text-3xl text-slate-600">Module 5 Locked</h2></div>
+        <div id="view-assessment" class="hidden text-center py-20"><h2 class="text-3xl text-white">Final Assessment Submission</h2></div>
+
+        <div class="mt-20 text-center pb-8 border-t border-slate-800/50 pt-8">
+            <p class="text-xs text-slate-600">&copy; 2025 The Curriculum Playbook</p>
+        </div>
+    </main>
+
+    <!-- VIEWER MODAL (Internal Docs Only) -->
+    <div id="pdf-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-slate-900 w-full max-w-3xl h-[80vh] rounded-2xl shadow-2xl flex flex-col border border-slate-700">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+                <span id="pdf-title" class="font-bold text-white">Document Viewer</span>
+                <button onclick="closePdf()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-8 bg-slate-50 text-slate-900" id="pdf-content"></div>
+        </div>
+    </div>
+
+    <!-- CONTACT MODAL -->
+    <div id="contact-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl border border-slate-700 p-8 text-center relative">
+            <button onclick="document.getElementById('contact-modal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center text-white text-3xl mx-auto mb-4 shadow-lg shadow-orange-500/20">
+                <i class="fa-regular fa-envelope"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Get in Touch</h3>
+            <p class="text-slate-400 text-sm mb-6">Have questions about the course? Drop me a line.</p>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 select-all text-orange-500 font-mono text-sm break-all">
+                bwab342@uowmail.edu.au
+            </div>
+            <a href="mailto:bwab342@uowmail.edu.au" class="block mt-4 bg-white text-slate-900 font-bold py-2 rounded-lg hover:bg-orange-500 hover:text-white transition">
+                Send Email
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Content Data
+        const documents = {
+            'syllabus': `
+                <div class="font-serif">
+                    <h1 class="text-4xl font-bold mb-2 text-center text-slate-900">Course Syllabus</h1>
+                    <h2 class="text-xl text-center text-slate-600 mb-8">Coding for Curriculum Leaders (EDGI902)</h2>
+                    
+                    <div class="bg-slate-100 p-4 rounded-lg mb-6 text-sm text-slate-700 border border-slate-200">
+                        <p><strong>Instructor:</strong> Brandon Abdul Baki</p>
+                        <p><strong>Philosophy:</strong> "BLADE" - Keeping Educators at the cutting edge of Blended Learning And Digital Education.</p>
+                    </div>
+
+                    <h3 class="text-lg font-bold uppercase tracking-wide border-b-2 border-orange-500 pb-2 mb-4">Course Rationale</h3>
+                    <p class="mb-6 leading-relaxed">This course is designed for the "Digital Immigrant" leader—subject-matter experts who feel their digital skills are "stuck in the past." We address the problem of static, hard-to-navigate resource hubs by teaching you the fundamentals of web design (UX, HTML, CSS) to create dynamic, user-friendly "Playbooks."</p>
+                    
+                    <h3 class="text-lg font-bold uppercase tracking-wide border-b-2 border-orange-500 pb-2 mb-4">Learning Outcomes</h3>
+                    <ul class="list-disc ml-6 mb-6 space-y-2">
+                        <li><strong>Analyze</strong> current resource hubs using User Experience (UX) principles to identify friction points for teachers.</li>
+                        <li><strong>Construct</strong> basic web pages using HTML structure and CSS styling to present information clearly.</li>
+                        <li><strong>Plan</strong> a digital "Playbook" sitemap that solves real centralization problems for your department.</li>
+                        <li><strong>Critique</strong> digital accessibility using Universal Design for Learning (UDL) guidelines.</li>
+                    </ul>
+
+                    <h3 class="text-lg font-bold uppercase tracking-wide border-b-2 border-orange-500 pb-2 mb-4">Assessment Structure</h3>
+                    <table class="w-full border-collapse border border-gray-300 mb-6 text-sm">
+                        <tr class="bg-gray-100">
+                            <th class="border p-3 text-left">Task</th>
+                            <th class="border p-3 text-left">Weight</th>
+                            <th class="border p-3 text-left">Due Date</th>
+                        </tr>
+                        <tr>
+                            <td class="border p-3"><strong>1. Digital Learning Course Prototype</strong><br><span class="text-xs text-gray-500">Design, usability, and pedagogy of your final Playbook.</span></td>
+                            <td class="border p-3">20 pts</td>
+                            <td class="border p-3">Week 3</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-3"><strong>2. Reflective Report</strong><br><span class="text-xs text-gray-500">Critical justification of design choices & theory.</span></td>
+                            <td class="border p-3">10 pts</td>
+                            <td class="border p-3">Week 3</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-3"><strong>3. Course Content & Activities</strong><br><span class="text-xs text-gray-500">Active learning opportunities & content quality.</span></td>
+                            <td class="border p-3">10 pts</td>
+                            <td class="border p-3">Ongoing</td>
+                        </tr>
+                         <tr>
+                            <td class="border p-3"><strong>4. Peer Review</strong><br><span class="text-xs text-gray-500">Constructive feedback on peer prototypes.</span></td>
+                            <td class="border p-3">5 pts</td>
+                            <td class="border p-3">End of Course</td>
+                        </tr>
+                    </table>
+                </div>
+            `,
+            'schedule': `
+                <div class="font-serif">
+                    <h1 class="text-3xl font-bold mb-8 text-center text-slate-900">Course Schedule & Timeline</h1>
+                    
+                    <!-- Week 1 -->
+                    <div class="mb-8 border-l-4 border-orange-500 pl-6 relative">
+                        <div class="absolute -left-3 top-0 w-6 h-6 bg-orange-500 rounded-full border-4 border-white"></div>
+                        <h3 class="font-bold text-xl text-orange-700">Week 1: The Foundation (UX & UDL)</h3>
+                        <p class="text-sm text-gray-500 mb-3 italic">Dates: October 1 - October 7</p>
+                        
+                        <div class="space-y-2">
+                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                <span class="text-xs font-bold bg-gray-200 px-2 py-1 rounded text-gray-600 uppercase mr-2">Module 0</span>
+                                <strong>Welcome & Orientation:</strong> "Hello & My Why" Video Submission.
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                <span class="text-xs font-bold bg-gray-200 px-2 py-1 rounded text-gray-600 uppercase mr-2">Module 1</span>
+                                <strong>Why Bother?:</strong> "See-Think-Wonder" UX Analysis (Padlet).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="mb-8 border-l-4 border-blue-500 pl-6 relative">
+                        <div class="absolute -left-3 top-0 w-6 h-6 bg-blue-500 rounded-full border-4 border-white"></div>
+                        <h3 class="font-bold text-xl text-blue-700">Week 2: The Bricks & Paint (Coding)</h3>
+                        <p class="text-sm text-gray-500 mb-3 italic">Dates: October 8 - October 14</p>
+                        
+                        <div class="space-y-2">
+                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                <span class="text-xs font-bold bg-gray-200 px-2 py-1 rounded text-gray-600 uppercase mr-2">Module 2</span>
+                                <strong>The Bricks (HTML):</strong> Code-Along Activity - "Meet the Team" page.
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                <span class="text-xs font-bold bg-gray-200 px-2 py-1 rounded text-gray-600 uppercase mr-2">Module 3</span>
+                                <strong>The Paint (CSS):</strong> Styling basics (Fonts, Colors, Layouts).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="mb-8 border-l-4 border-green-500 pl-6 relative">
+                        <div class="absolute -left-3 top-0 w-6 h-6 bg-green-500 rounded-full border-4 border-white"></div>
+                        <h3 class="font-bold text-xl text-green-700">Week 3: The Blueprint & Build (Final)</h3>
+                        <p class="text-sm text-gray-500 mb-3 italic">Dates: October 15 - October 21</p>
+                        
+                        <div class="space-y-2">
+                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                <span class="text-xs font-bold bg-gray-200 px-2 py-1 rounded text-gray-600 uppercase mr-2">Module 4</span>
+                                <strong>The Blueprint:</strong> Sitemap drafting and navigation logic.
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                <span class="text-xs font-bold bg-gray-200 px-2 py-1 rounded text-gray-600 uppercase mr-2">Module 5</span>
+                                <strong>The Build:</strong> Final Assessment Submission (Prototype Link).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            'ux-checklist': `
+                <div class="font-serif">
+                    <h1 class="text-3xl font-bold mb-6 text-center text-slate-900">UX Audit Checklist</h1>
+                    <p class="text-center text-gray-500 mb-8">Use this rubric to evaluate your current department folders or portal.</p>
+
+                    <div id="checklist-form">
+                        <table class="w-full border-collapse border border-gray-300 text-sm mb-6">
+                            <tr class="bg-gray-100">
+                                <th class="border p-3 text-left">Criteria</th>
+                                <th class="border p-3 text-center w-24">Yes</th>
+                                <th class="border p-3 text-center w-24">No</th>
+                            </tr>
+                            <!-- Navigation -->
+                            <tr><td colspan="3" class="bg-slate-50 font-bold p-2 text-slate-700">1. Navigation & Structure</td></tr>
+                            <tr>
+                                <td class="border p-3">Can I find a specific policy in <strong>3 clicks or less</strong>?</td>
+                                <td class="border p-3 text-center"><input type="radio" name="q1" value="yes"></td>
+                                <td class="border p-3 text-center"><input type="radio" name="q1" value="no"></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-3">Are folder names descriptive?</td>
+                                <td class="border p-3 text-center"><input type="radio" name="q2" value="yes"></td>
+                                <td class="border p-3 text-center"><input type="radio" name="q2" value="no"></td>
+                            </tr>
+                            
+                            <!-- Visuals -->
+                            <tr><td colspan="3" class="bg-slate-50 font-bold p-2 text-slate-700">2. Visual Hierarchy</td></tr>
+                            <tr>
+                                <td class="border p-3">Are important items visually distinct?</td>
+                                <td class="border p-3 text-center"><input type="radio" name="q3" value="yes"></td>
+                                <td class="border p-3 text-center"><input type="radio" name="q3" value="no"></td>
+                            </tr>
+                            <tr>
+                                <td class="border p-3">Is the interface free of "clutter"?</td>
+                                <td class="border p-3 text-center"><input type="radio" name="q4" value="yes"></td>
+                                <td class="border p-3 text-center"><input type="radio" name="q4" value="no"></td>
+                            </tr>
+
+                            <!-- Accessibility -->
+                            <tr><td colspan="3" class="bg-slate-50 font-bold p-2 text-slate-700">3. Accessibility (UDL)</td></tr>
+                            <tr>
+                                <td class="border p-3">Is text high-contrast and readable?</td>
+                                <td class="border p-3 text-center"><input type="radio" name="q5" value="yes"></td>
+                                <td class="border p-3 text-center"><input type="radio" name="q5" value="no"></td>
+                            </tr>
+                        </table>
+                        
+                        <div class="text-right">
+                            <button onclick="submitChecklist()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 transition">Submit Audit</button>
+                        </div>
+                    </div>
+
+                    <!-- Success Message (Hidden by default) -->
+                    <div id="checklist-success" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Audit Submitted!</strong>
+                        <span class="block sm:inline"> Great job reflecting on your UX. Use these insights for your Padlet post.</span>
+                    </div>
+                </div>
+            `
+        };
+
+        // Navigation Logic
+        function switchView(viewId) {
+            // Hide all views
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+            
+            // Deactivate all nav items
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active-nav', 'bg-slate-800', 'text-white');
+                el.classList.add('text-slate-400');
+            });
+
+            // Show target view
+            const targetView = document.getElementById('view-' + viewId);
+            if(targetView) {
+                targetView.classList.remove('hidden');
+            }
+
+            // Activate target nav item
+            const nav = document.getElementById('nav-' + viewId);
+            if(nav) {
+                nav.classList.add('active-nav');
+                nav.classList.remove('text-slate-400');
+            }
+            
+            // Scroll to top
+            document.querySelector('main').scrollTop = 0;
+        }
+
+        // Video Submission Logic
+        function submitAssignment() {
+            const input = document.getElementById('video-link-input');
+            const form = document.getElementById('submission-form');
+            const success = document.getElementById('submission-success');
+            const timeDisplay = document.getElementById('submission-time');
+            
+            if(input.value.trim() !== "") {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const dateString = now.toLocaleDateString();
+                
+                form.classList.add('hidden');
+                success.classList.remove('hidden');
+                success.classList.add('flex');
+                
+                timeDisplay.innerHTML = `Submitted on ${dateString} at ${timeString} <br><span class="text-green-300 font-bold text-[10px] uppercase">On Time</span>`;
+            } else {
+                input.classList.add('border-red-500');
+                setTimeout(() => input.classList.remove('border-red-500'), 1000);
+            }
+        }
+
+        // Checklist Submission Logic
+        function submitChecklist() {
+            document.getElementById('checklist-form').classList.add('hidden');
+            document.getElementById('checklist-success').classList.remove('hidden');
+        }
+
+        // Modal Logic
+        function openPdf(docId) {
+            const modal = document.getElementById('pdf-modal');
+            const content = document.getElementById('pdf-content');
+            if(documents[docId]) {
+                content.innerHTML = documents[docId];
+                document.getElementById('pdf-title').innerText = docId === 'syllabus' ? "Syllabus" : "Document";
+                modal.classList.remove('hidden');
+            }
+        }
+        function closePdf() { document.getElementById('pdf-modal').classList.add('hidden'); }
+        function openContactModal() { document.getElementById('contact-modal').classList.remove('hidden'); }
+    </script>
+</body>
+</html>
